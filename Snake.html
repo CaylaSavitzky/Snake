@@ -300,9 +300,9 @@ var screenResize = function(){
 			menu.style.width = 190;
 			menu.style.height = window.innerHeight-60;
 		}
-	var width = board.canvas.width;
-	var height = board.canvas.height;
-	console.log(window.innerHeight);
+	width = board.canvas.width;
+	height = board.canvas.height;
+	console.log(window.width);
 }
 
 // these are three tests to see if everything is working right!
@@ -459,12 +459,12 @@ post = function(){
 	document.getElementById("time").innerHTML = "Time: " + Math.floor(countMax*interval/250-count*interval/250)
 	//drawing the game board
 	board.beginPath();
-	board.clearRect(0,0,width+200,height);
+	board.clearRect(0,0,width,height);
 	board.fillStyle = "black";
-	board.fillRect(0, 0, width +200,height);
+	board.fillRect(0, 0, width,height);
 	board.lineWidth = edge;
 	board.strokeStyle = neonGreen;
-	board.strokeRect(0, 0, width+200,height);
+	board.strokeRect(0, 0, width,height);
 	board.moveTo(width,0);
 	board.lineWidth = edge/2;
 	board.lineTo(width,height);
