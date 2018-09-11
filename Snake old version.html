@@ -2,137 +2,18 @@
 <head>
 <style>
 body{
-	background-color: black;
+	background-color: #EEE;
 	margin:25;
 }
 ul {
 position:relative;
 display:inline-block;
 top:-50%;
-display: none;
 }
-canvas {
-	margin-bottom: 0;
-	margin-right: 0;
-}
-
-div{
-	background-color: black;
-	margin:0;
-	float:left;
-}
-
-#menu{
-	background-color: black;
-	margin:0;
-	width:200px;
-	height: calc(100% - 50px);
-	float:left;
-	border: 5px solid #66FF66;
-	display: grid;
-	grid-template-columns: repeat(1,1fr);
-	grid-gap: 10px;
-	grid-template-areas: 
-	  " a "
-	  " b "
-	  " c ";
-}
-
-button{
-	background: black;
-	color: #66FF66;
-	border: 1px solid #66FF66;
-	border-radius: 10%;
-}
-
-#options{
-	display: grid;
-	grid-template-columns: repeat(5,1fr);
-	grid-gap: 10px;
-	grid-auto-rows: 25px;
-	grid-template-areas: 
-	  ". a b c .";
-}
-#info{
-	display: grid;
-	color: #66FF66;
-	grid-template-columns: repeat(1,1fr);
-	grid-gap: 10px;
-	grid-auto-rows: 25px;
-	grid-template-areas: 
-	  " a "
-	  " b ";
-}
-#directions{
-	display: grid;
-	grid-template-columns: repeat(5,1fr);
-	grid-gap: 10px;
-	grid-auto-rows: 25px;
-	grid-template-areas: 
-	  ". . a . ."
-	  ". b . c ."
-	  ". . d . .";
-}
-
-#menu > div {
-	margin:20px;
-}
-
-button, p {
-	align-self: center;
-	justify-self: center;
-}
-
-#options {grid-area: a}
-#info {grid-area: b}
-#directions {grid-area: c}
-#option1 {grid-area: a;}
-#option2{grid-area: b;}
-#option3{grid-area: c;}
-#score{grid-area: a;}
-#time{grid-area: b;}
-#up{grid-area: a;}
-#left{grid-area: b;}
-#right{grid-area: c;}
-#down{grid-area: d;}
-
-
-
-
-@media all and (max-aspect-ratio:1/1){
-	#menu{
-		grid-template-columns: repeat(2,1fr);
-		grid-template-areas: 
-		  " a  c"
-		  " b  c"
-	}
-}
-
 </style>
 </head>
-<body onresize="screenResize()">
-<div>
-	<canvas id = 'gamecanvas' onclick="clickEventHandler(event)"></canvas>
-</div>
-<div id = 'menu'>
-	<div id = "options">
-		<button id = "option1"> :3 </button>
-		<button id = "option2"> ;) </button>
-		<button id = "option3"> :P </button>
-	</div>
-	<div id = "info">
-		<p id = "score"> score: 0 </p>
-		<p id = "time"> time: off </p>
-	</div>
-	<div id = "directions">
-		<button id = "up" onclick="keyEventHandler(new fakeEvent(119))">W</button>
-		<button id = "left" onclick="keyEventHandler(new fakeEvent(97))">A</button>
-		<button id = "right" onclick="keyEventHandler(new fakeEvent(100))">D</button>
-		<button id = "down" onclick="keyEventHandler(new fakeEvent(115))">S</button>
-	</div>
-</div>
-
-
+<body>
+<canvas id = 'gamecanvas' onclick="clickEventHandler(event)"></canvas>
 <img style="display:none" id = "nompic">
 <ul>
 How to play:
@@ -163,26 +44,13 @@ When the timer runs out it's game over.
 *
 */
 var canvas = document.getElementById("gamecanvas");
-var menu = document.getElementById("menu");
 var board = canvas.getContext('2d');
 var edge = 10;
-if (window.innerWidth < window.innerHeight){
-	board.canvas.width = window.innerWidth-50;
-	board.canvas.height = window.innerHeight-50 - 200;
-	menu.style.width = window.innerWidth-60;
-	menu.style.height = 190;
-}
-else
-	{
-		board.canvas.width = window.innerWidth-50 -200;
-		board.canvas.height = window.innerHeight-50;
-		menu.style.width = 190;
-		menu.style.height = window.innerHeight-60;
-	}
-var width = board.canvas.width;
+board.canvas.width = window.innerWidth-50;
+board.canvas.height = window.innerHeight-50;
+var width = board.canvas.width-200;
 var height = board.canvas.height;
 console.log(window.innerHeight);
-
 var fruit = []
 var actors = []
 actors.push(fruit)
@@ -194,7 +62,7 @@ var play = true
 var nomPic = document.getElementById("nompic")
 var neonGreen = "#66FF66"
 var euclidian = false;
-var foodIncrease = 0;
+var foodIncrease = 40;
 var countdown = true;
 var countdownBonus = .125;
 var snackCounter = 0;
@@ -220,18 +88,6 @@ var fruityRainbow = ["Radical Red","#FF355E",
 "Razzle Dazzle Rose","#EE34D2",
 "Hot Magenta","#FF00CC",
 "Purple Pizzazz","#FF00CC"]
-
-
-/*
-*
-*
-*
-class constructors
-*
-*
-*
-*/
-
 // Fruit and your snake are of this class
 class actor {
 	constructor(name,cords,symbol,size,v = new cord(0,0)){
@@ -268,6 +124,22 @@ class cord {
 	}
 }
 
+
+class button {
+	constructor (x,y, width, height, text, onclick){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.onclick = onclick;
+		this.print = function(){
+			board.font = fontSize + "px Veranda";
+			board.fillText(text, this.x, this.y);
+		}
+		
+	}
+}
+
 var rectIntersect = function(cord1, size1, cord2, size2){
 	var left1 = cord1.x;
 	var right1 = cord1.x+size1;
@@ -284,25 +156,6 @@ var rectIntersect = function(cord1, size1, cord2, size2){
 		return true;
 	}
 	return false;
-}
-
-var screenResize = function(){
-	if (window.innerWidth < window.innerHeight){
-		board.canvas.width = window.innerWidth-50;
-		board.canvas.height = window.innerHeight-50 - 200;
-		menu.style.width = window.innerWidth-60;
-		menu.style.height = 190;
-	}
-	else
-		{
-			board.canvas.width = window.innerWidth-50 -200;
-			board.canvas.height = window.innerHeight-50;
-			menu.style.width = 190;
-			menu.style.height = window.innerHeight-60;
-		}
-	var width = board.canvas.width;
-	var height = board.canvas.height;
-	console.log(window.innerHeight);
 }
 
 // these are three tests to see if everything is working right!
@@ -397,15 +250,9 @@ fruitMaker()
 
 
 
-// Event Simulator
-var fakeEvent = function(key){
-	this.which = key;
-}
-
 
 // any key presses are handled here
 keyEventHandler = function(event){
-	console.log(event);
 	var key = event.which
 	console.log(key);
 	var h = actors[0][0];
@@ -455,8 +302,6 @@ clickEventHandler = function(event){
 
 
 post = function(){
-	document.getElementById("score").innerHTML = "Score: " + snackCounter;
-	document.getElementById("time").innerHTML = "Time: " + Math.floor(countMax*interval/250-count*interval/250)
 	//drawing the game board
 	board.beginPath();
 	board.clearRect(0,0,width+200,height);
@@ -534,6 +379,74 @@ post = function(){
 			board.lineTo(width+edge,height-edge);
 			board.stroke();
 		}
+	}
+
+	
+
+	//printing all of the info~
+	board.font = fontSize + "px Veranda";
+
+	// a variable for the height of text so only relivant feature text is shown
+	var h = 30;
+	board.fillText("Menu  Rules  About", width + 30,h);
+	// line seperating info from other
+		h+=20;
+		board.beginPath()
+		board.moveTo(width,h);
+		board.lineWidth = edge/2;
+		board.lineTo(width+200-edge/2,h);
+		board.stroke();
+
+	//menu appears when paused
+	if (pause){
+		h+=20;
+		//game options
+		board.fillText("Menu:", width + 50,h);
+
+		h+=25
+		if(euclidian){
+			board.fillText("Euclidian", width + 30,h);
+		}
+		else{
+			board.fillText("Non-Euclidian", width + 30,h);
+		}
+		h+=20
+		board.fillText("Countdown:", width + 30,h);
+		h+=20
+		board.fillText("Countdown Bonus:", width + 30,h);
+		h+=20
+		board.fillText("Increasing Fruit:", width + 30,h);
+		// line seperating info from other
+		h+=20;
+		board.beginPath()
+		board.moveTo(width,h);
+		board.lineWidth = edge/2;
+		board.lineTo(width+200-edge/2,h);
+		board.stroke();
+	}
+
+	// Action buttons
+	h+=20;
+	board.fillText("wasd", width + 30,h);
+	
+	// line seperating info from other
+	h+=20;
+	board.beginPath()
+	board.moveTo(width,h);
+	board.lineWidth = edge/2;
+	board.lineTo(width+200-edge/2,h);
+	board.stroke();
+
+	// key info & relivant text items
+	h += 20;
+	board.fillText("Key Info:", width + 50,h);
+	h += 25;
+	board.fillText("Snacks Enjoyed:",width + 30,h);
+	board.fillText(snackCounter,width + fontSize*9.5,h);
+	if (countdown){
+		h +=20
+		board.fillText("Time Remaining:",width + 30,h)
+		board.fillText(Math.floor(countMax*interval/250-count*interval/250),width + fontSize*9.5,h)
 	}
 }
 
