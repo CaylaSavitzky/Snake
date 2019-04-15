@@ -1,105 +1,54 @@
-<html onkeypress = "keyEventHandler(event)">
+<html>
 <head>
 <style>
 body{
 	background-color: #2dc;
-	margin:25;
-}
-.div1 {
-	margin-bottom: 0;
-	margin-right: 0;
-	width:calc(100% - 270px);
-	height:calc(100% - 50px);
-	background-color: blue;
-	margin:0;
-	float:left;
+	margin:20;
 }
 
-#menu{
-	background-color: black;
-	margin:0;
-	width:200px;
-	height: calc(100% - 50px);
-	float:left;
-	border: 5px solid #66FF66;
-}
-
-button{
-	background: black;
-	color: #66FF66;
-	border: 1px solid #66FF66;
-	border-radius: 10%;
-}
-
-#options{
-	display: grid;
-	grid-template-columns: repeat(5,1fr);
-	grid-gap: 10px;
-	grid-auto-rows: 25px;
-	grid-template-areas: 
-	  ". a b c .";
-}
-#info{
-	display: grid;
-	color: #66FF66;
-	grid-template-columns: repeat(1,1fr);
-	grid-gap: 10px;
-	grid-auto-rows: 25px;
-	grid-template-areas: 
-	  " a "
-	  " b ";
-}
-#directions{
-	display: grid;
-	grid-template-columns: repeat(5,1fr);
-	grid-gap: 10px;
-	grid-auto-rows: 25px;
-	grid-template-areas: 
-	  ". . a . ."
-	  ". b . c ."
-	  ". . d . .";
-}
-
-#menu > div {
-	margin:20px;
-}
-
-button, p {
-	align-self: center;
-	justify-self: center;
-}
-
-#option1 {grid-area: a;}
-#option2{grid-area: b;}
-#option3{grid-area: c;}
-#score{grid-area: a;}
-#time{grid-area: b;}
-#up{grid-area: a;}
-#left{grid-area: b;}
-#right{grid-area: c;}
-#down{grid-area: d;}
 
 </style>
 </head>
 <body>
-<canvas> class = "div1" ></canvas>
-<div id = 'menu'>
-	<div id = "options">
-		<button id = "option1"> :3 </button>
-		<button id = "option2"> ;) </button>
-		<button id = "option3"> :P </button>
-	</div>
-	<div id = "info">
-		<p id = "score"> score: 0 </p>
-		<p id = "time"> time: off </p>
-	</div>
-	<div id = "directions">
-		<button id = "up">W</button>
-		<button id = "left">A</button>
-		<button id = "right">D</button>
-		<button id = "down">S</button>
-	</div>
-</div>
-</div>
+	<canvas id = "canvas" width = 420px height = 320></canvas>
+
+<script>
+
+	
+	var canvas = document.getElementById("canvas");
+	var board = canvas.getContext('2d');
+	board.scale(1,1)
+
+	var neonGreen = "#f0f"
+	var edge = 10;
+	var width = board.canvas.width -edge*2;
+	var height = board.canvas.height-edge*2;
+
+
+	//drawing the game board
+	board.beginPath();
+	board.rect(edge,edge,width-edge*2,height-edge*2);
+	board.closePath();
+
+	board.lineWidth = edge*2;
+	board.strokeStyle = neonGreen;
+	board.stroke();
+
+	board.fillStyle = "#000";
+	board.fill();
+
+
+
+
+
+	// the rectangle
+	board.beginPath();
+	board.rect(0, 0, edge, edge);
+	board.closePath();
+	 
+	// the fill color
+	board.fillStyle = "#51DCFF";
+	board.fill();
+</script>
 </body>
 </html>
