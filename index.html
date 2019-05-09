@@ -1,8 +1,18 @@
-<html onkeypress = "keyEventHandler(event)">
+<!DOCTYPE html>
+<html lang="en" onkeypress = "keyEventHandler(event)">
 <head>
+	<title> Snake </title>
+
+	<meta name="robots" content="index, follow" />
+	<meta charset="UTF-8">
+	<link rel="canonical" href="" />
+	<meta name="keywords" content="Snake Single Page Application SPA CSS CSS3 HTML HTML5 Javascript Cayla Savitzky">
+	<meta name = "description" content = "A single page application that plays the classic game Snake. This is a demo page by Cayla Savitzky">
+	<meta name="author" content="Cayla Savitzky">
+	<script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <style>
 body{
-	background-color: #EEE;
+	background-color: black;
 	margin:25;
 }
 ul {
@@ -10,26 +20,178 @@ position:relative;
 display:inline-block;
 top:-50%;
 }
+
+#pause_menu{
+	color: white;
+	background: #333;
+	opacity: .9;
+	padding: 10px;
+	position: absolute;
+	top:25px;
+	display: flex;
+	flex-wrap: wrap;
+	margin-right:20px;
+	width:calc(100% - 70px);
+	transition: z-index .1s;
+}
+
+#pause_menu > h3{
+	width:100%;
+	align-self: center;
+	justify-self:center;
+}
+
+#pause_menu> div{
+	background-color: #333;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	align-content: center;
+}
+
+canvas {
+	margin-bottom: 0;
+	margin-right: 0;
+	margin:2.5px;
+}
+
+div{
+	background-color: black;
+	margin:0;
+	float:left;
+}
+
+#menu{
+	box-sizing: border-box;
+	background-color: black;
+	margin:2.5px;
+	width:200px;
+	height: calc(100% - 50px);
+	float:left;
+	border: 10px solid #2c2;
+	display: grid;
+	grid-template-columns: repeat(1,1fr);
+	grid-gap: 10px;
+	grid-template-areas: 
+	  " a "
+	  " b "
+	  " c ";
+}
+
+button{
+	background: black;
+	color: #66FF66;
+	border: 1px solid #66FF66;
+	border-radius: 10%;
+	padding:6px 10px;
+	outline:none;
+}
+
+#options{
+	display: grid;
+	grid-template-columns: repeat(5,1fr);
+	grid-gap: 10px;
+	grid-auto-rows: 25px;
+	grid-template-areas: 
+	  ". a b c .";
+}
+#info{
+	display: grid;
+	color: #66FF66;
+	grid-template-columns: repeat(1,1fr);
+	grid-gap: 10px;
+	grid-auto-rows: 25px;
+	grid-template-areas: 
+	  " a "
+	  " b ";
+}
+#directions{
+	display: grid;
+	grid-template-columns: repeat(5,1fr);
+	grid-gap: 10px;
+	grid-auto-rows: 25px;
+	grid-template-areas: 
+	  ". . a . ."
+	  ". b . c ."
+	  ". . d . .";
+}
+
+#menu > div {
+	margin:20px;
+}
+
+button, p {
+	align-self: center;
+	justify-self: center;
+}
+
+#options {grid-area: a}
+#info {grid-area: b}
+#directions {grid-area: c}
+#option1 {grid-area: a;}
+#option2{grid-area: b;}
+#option3{grid-area: c;}
+#score{grid-area: a;}
+#time{grid-area: b;}
+#up{grid-area: a;}
+#left{grid-area: b;}
+#right{grid-area: c;}
+#down{grid-area: d;}
+
+
+
+
+@media all and (max-aspect-ratio:1/1){
+	#menu{
+		grid-template-columns: repeat(2,1fr);
+		grid-template-areas: 
+		  " a  c"
+		  " b  c"
+	}
+}
+
 </style>
 </head>
-<body>
-<canvas id = 'gamecanvas' onclick="clickEventHandler(event)"></canvas>
+<body onresize="screenResize()">
+<div>
+	<canvas id = 'gamecanvas' onclick="clickEventHandler(event)"></canvas>
+</div>
+<div id = 'menu'>
+	<div id = "options">
+		<button id = "option1" onclick= "option1()"> :3 </button>
+		<button id = "option2" onclick= "option2()"> ;) </button>
+		<button id = "option3" onclick= "option3()"> :P </button>
+	</div>
+	<div id = "info">
+		<p id = "score"> score: 0 </p>
+		<p id = "time"> time: off </p>
+	</div>
+</div>
+
+
 <img style="display:none" id = "nompic">
-<ul>
-How to play:
-<li>
-Move with "W" (up), "A" (left), "S" (down), and "D" (right)!
-</li>
-<li>
-Pause the game by pressing p
-</li>
-<li>
-You can pass through walls but be careful not to eat your own tail.
-</li>
-<li>
-When the timer runs out it's game over.
-</li>
-</ul>
+<div id = "pause_menu">
+	<h3>How to play:</h3>
+	<ul>
+	<li>
+	Move with WASD or by swiping!
+	</li>
+	<li>
+	Pause the game by pressing the "p" key
+	</li>
+	<li>
+	You can pass through walls but be careful not to eat your own tail.
+	</li>
+	<li>
+	When the timer runs out it's game over.
+	</li>
+	</ul>
+	<div width="100%">
+		<button  onclick = "keyEventHandler(new fakeEvent(112))">
+			~Play~
+		</button>
+	</div>
+</div>
 </body>
 <script>
 // Snake
@@ -43,14 +205,43 @@ When the timer runs out it's game over.
 *
 *
 */
+
+var objectSize = 10;
 var canvas = document.getElementById("gamecanvas");
+var menu = document.getElementById("menu");
 var board = canvas.getContext('2d');
-var edge = 10;
-board.canvas.width = window.innerWidth-50;
-board.canvas.height = window.innerHeight-50;
-var width = board.canvas.width-200;
-var height = board.canvas.height;
-console.log(window.innerHeight);
+var edge = objectSize;
+
+var windowHeight;
+var windowWidth;
+var width;
+var height;
+
+var screenResize = function(){
+	windowHeight = window.innerHeight
+	windowWidth = window.innerWidth
+	windowHeight = Math.floor(windowHeight/10)*10
+	windowWidth = Math.floor(windowWidth/10)*10
+	if (window.innerWidth < windowHeight){
+		board.canvas.width = windowWidth-50;
+		board.canvas.height = windowHeight-50 - 200;
+		menu.style.width = windowWidth-50;
+		menu.style.height = 190;
+	}
+	else
+		{
+			board.canvas.width = windowWidth-50 -200;
+			board.canvas.height = windowHeight-50;
+			menu.style.width = 190;
+			menu.style.height = windowHeight-50;
+		}
+	width = board.canvas.width-edge;
+	height = board.canvas.height-edge;
+}
+
+screenResize();
+
+
 var fruit = []
 var actors = []
 actors.push(fruit)
@@ -58,20 +249,21 @@ var count = 0
 var countMax = 600
 var interval = 50
 var fontSize = 16;
-var play = true
+var play = false
 var nomPic = document.getElementById("nompic")
-var neonGreen = "#66FF66"
+var neonGreen = "#88FF88"
+var borderGreen = "#2c2"
 var euclidian = false;
-var foodIncrease = 40;
+var foodIncrease = 0;
 var countdown = true;
 var countdownBonus = .125;
 var snackCounter = 0;
 var pause = !play
 var moveSpeed = 10;
-var size1 = 10;
-var size2 = 10;
+var size1 = objectSize;
+var size2 = objectSize;
 var movingFruit = false;
-var wildColoredFruit = true;
+var wildColoredFruit = false;
 var fruityRainbow = ["Radical Red","#FF355E",
 "Wild Watermelon","#FD5B78",
 "Outrageous Orange","#FF6037",
@@ -88,6 +280,65 @@ var fruityRainbow = ["Radical Red","#FF355E",
 "Razzle Dazzle Rose","#EE34D2",
 "Hot Magenta","#FF00CC",
 "Purple Pizzazz","#FF00CC"]
+
+option1 = function(){
+	wildColoredFruit = !wildColoredFruit
+}
+
+option2 = function(){
+	foodIncrease +=1;
+	foodIncrease %=2;
+}
+
+option3 = function(){
+	countdown = !countdown;
+}
+
+/*
+*
+*
+*
+Swipe Detector
+*
+*
+*
+*/
+try{
+	var swipedetector = new Hammer(canvas);
+	swipedetector.get('pan').set({direction:Hammer.DIRECTION_ALL});
+
+	swipedetector.on("panleft panright panup pandown", function(ev) {
+	    var a;
+	    if (ev.type == "panup"){
+	    	a =119;
+	    }
+	    if (ev.type == "panleft"){
+	    	a = 97;
+	    }
+	    if (ev.type == "panright"){
+	    	a = 100;
+	    }
+	    if (ev.type == "pandown"){
+	    	a = 115;
+	    }
+	    keyEventHandler(new fakeEvent(a));
+	    console.log(ev.type);
+	});
+}
+catch(err) {
+	console.log("Hammer the js package isn't loading. Error caught: ",err)
+}
+
+/*
+*
+*
+*
+class constructors
+*
+*
+*
+*/
+
 // Fruit and your snake are of this class
 class actor {
 	constructor(name,cords,symbol,size,v = new cord(0,0)){
@@ -124,22 +375,6 @@ class cord {
 	}
 }
 
-
-class button {
-	constructor (x,y, width, height, text, onclick){
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.onclick = onclick;
-		this.print = function(){
-			board.font = fontSize + "px Veranda";
-			board.fillText(text, this.x, this.y);
-		}
-		
-	}
-}
-
 var rectIntersect = function(cord1, size1, cord2, size2){
 	var left1 = cord1.x;
 	var right1 = cord1.x+size1;
@@ -158,6 +393,8 @@ var rectIntersect = function(cord1, size1, cord2, size2){
 	return false;
 }
 
+
+
 // these are three tests to see if everything is working right!
 //var fruit1 = new actor('fruit',[new cord(0,0)],"blue", size1)
 //actors[1].push(fruit1)
@@ -174,7 +411,7 @@ var rectIntersect = function(cord1, size1, cord2, size2){
 */
 
 // Wala! Our Protagonist appears! Along with a delightful snack!
-var heroine = new actor('heroine',[new cord(200+edge,400+edge)],neonGreen,size1, new cord(0,-moveSpeed))
+var heroine = new actor('heroine',[new cord(0+size1,height-size1)],neonGreen,size1, new cord(0,-moveSpeed))
 // oldDir is used periodically to look at the last
 //	direction your snake was headed
 var oldDir = new cord(0,0)
@@ -196,10 +433,10 @@ heroine.moveNonEuclidian = function(){
 	oldDir = this.v
 	var body1 = this.cords[0]
 	var head = body1.dup()  /// issue this is refferencing head, but we just want its properties
-	head.x += this.v.x + width
-	head.x %= width
-	head.y += this.v.y + height
-	head.y %= height
+	head.x += this.v.x + width -10
+	head.x %= width-10
+	head.y += this.v.y + height -10
+	head.y %= height-10
 	this.cords.splice(0,0,head)
 	this.cords.pop()
 }
@@ -220,12 +457,11 @@ heroine.eat = function(nom){
 	//the new spot goes in the direction you're going (as a unit vector) multiplied by the size of your bod
 	var addition = new cord(head.x + this.v.x/moveSpeed*this.size, head.y + this.v.y/moveSpeed*this.size)	
 	this.cords.splice(0,0,addition)
+	
+	
 	fruit.splice(fruit.indexOf(nom),1)
+	
 	snackCounter = snackCounter+1
-	console.log('\n')
-	for (var c in this.cords){
-		console.log('cord'+c+":",this.cords[c].x, this.cords[c].y)
-	}
 }
 // Adding your Snake to the list of actors (or actresses as the case may be!)
 actors.splice(0,0,[heroine])
@@ -234,14 +470,11 @@ actors.splice(0,0,[heroine])
 
 fruitMaker = function(){
 	var place = new cord(Math.floor(Math.random()*(width - 2*size2)/10)*10 + size2, Math.floor(Math.random()*(height - 2*size2)/10)*10+size2)
-	console.log("okay",place.x + place.y)
 	var color = "blue"
 	//weird fruit colors ^-^
-	if (wildColoredFruit){
-	color = fruityRainbow[Math.floor(Math.random()*fruityRainbow.length/2)*2+1];}
+	color = fruityRainbow[Math.floor(Math.random()*fruityRainbow.length/2)*2+1];
 	var fruit = new actor('fruit',[place],color,size2)
 	actors[1].push(fruit)
-	console.log('fruitmaker ' + place.x + " " + place.y)
 }
 
 fruitMaker()
@@ -250,11 +483,15 @@ fruitMaker()
 
 
 
+// Event Simulator
+var fakeEvent = function(key){
+	this.which = key;
+}
+
 
 // any key presses are handled here
 keyEventHandler = function(event){
 	var key = event.which
-	console.log(key);
 	var h = actors[0][0];
 	switch(key){
 		case 119: 
@@ -280,9 +517,11 @@ keyEventHandler = function(event){
 		case 112:
 		if (play){
 			play = false;
+			document.getElementById("pause_menu").style.zIndex = "1";
 		}
 		else {
 			play = true;
+			document.getElementById("pause_menu").style.zIndex = "-1";
 		}
 		pause = !play
 		break
@@ -291,6 +530,8 @@ keyEventHandler = function(event){
 		console.log('event handled: ' + h.v)
 	}
 }
+
+
 
 // gameboard clicks are handled here
 clickEventHandler = function(event){
@@ -302,49 +543,68 @@ clickEventHandler = function(event){
 
 
 post = function(){
+	document.getElementById("score").innerHTML = "Score: " + snackCounter;
+	document.getElementById("time").innerHTML = "Time: " + Math.floor(countMax*interval/250-count*interval/250)
+
+
 	//drawing the game board
 	board.beginPath();
-	board.clearRect(0,0,width+200,height);
-	board.fillStyle = "black";
-	board.fillRect(0, 0, width +200,height);
-	board.lineWidth = edge;
-	board.strokeStyle = neonGreen;
-	board.strokeRect(0, 0, width+200,height);
-	board.moveTo(width,0);
-	board.lineWidth = edge/2;
-	board.lineTo(width,height);
+	board.rect(edge,edge,width-edge,height-edge);
+	board.closePath();
+
+	board.lineWidth = edge*2;
+	board.strokeStyle = borderGreen;
 	board.stroke();
+
+	board.fillStyle = "#000";
+	board.fill();
+
+
 	//setting relivant variables
 	var herione = actors[0][0]
 	var head = herione.cords[0]
 	var fruit = actors[1]
 	// check if a fruit is eaten, resolve if do, draw if not
-	for (var f in fruit){ 
+
+	let f = 0
+	while (f < fruit.length){
+
 		var nom = fruit[f]
+		f = f+1
 		var cords = nom.cords
 		for (var c in cords){
-			var cord1 = cords[c]  // wait, how many cordinates are there in cords for just one fruit?
-			if (rectIntersect(head, heroine.size, cord1, nom.size)){ // I *think* this second for is redundant and there's always just one thing in it.
+			// wait, how many cordinates are there in cords for just one fruit? 
+			// ...This second for is unhelpful, there's always just one thing in it.
+			var cord1 = cords[c]  
+			if (rectIntersect(head, heroine.size, cord1, nom.size)){ 
 				herione.eat(nom)
-				//debugging statement
-				for (var c in heroine.cords){console.log('cord'+c+":",heroine.cords[c].x, heroine.cords[c].y)}
 				fruitMaker()
+
 				var n = 0
-				// increasing amount of food after each snack caught
+				// optional increasing amount of food after each snack caught
 				while (n < foodIncrease){
 				fruitMaker()
 				n = n +1
 				}
+
+				//optional adding time to the timer
 				if (countdown)
 				{
 					countMax= countMax - count + countMax*countdownBonus
 					count = 0
 				}
+
+				f = 0
 			}
 			else{
-				board.fillStyle = nom.symbol
-				board.fillRect(cord1.x, cord1.y, nom.size, nom.size)
-				board.drawImage(nomPic, cord1.x,cord1.y,nom.size,nom.size)
+				if (!wildColoredFruit){
+					board.fillStyle = "blue"
+				}
+				else{
+					board.fillStyle = nom.symbol					
+				}
+				board.fillRect(cord1.x+edge, cord1.y +edge, nom.size, nom.size)
+				board.drawImage(nomPic, cord1.x +edge,cord1.y+edge,nom.size,nom.size)
 			}
 
 		}
@@ -358,14 +618,11 @@ post = function(){
 		for (var c2=0; c2 < heroine.cords.length; c2++){
 			var cord2 = heroine.cords[c2];
 			if (rectIntersect(cord1, heroine.size, cord2, heroine.size) && c != c2){
-				console.log('cord1', cord1.x, cord1.y)
-				console.log('cord2', cord2.x, cord2.y)
-				console.log("Game Over")
 				play = false
 			}
 		}
 		board.fillStyle = heroine.symbol
-		board.fillRect(cord1.x,cord1.y,herione.size,herione.size)
+		board.fillRect(cord1.x + edge,cord1.y+edge,herione.size,herione.size)
 	}
 	if (euclidian){
 		if (head.x <=0 || head.x >= width || head.y <=0 || head.y >= height){
@@ -374,79 +631,11 @@ post = function(){
 			//removes most of any parts of your snake that pass through the right wall
 			board.beginPath()
 			board.strokeStyle = "black";
-			board.moveTo(width+edge,edge);
+			board.moveTo(width,0);
 			board.lineWidth = edge;
-			board.lineTo(width+edge,height-edge);
+			board.lineTo(width,height);
 			board.stroke();
 		}
-	}
-
-	
-
-	//printing all of the info~
-	board.font = fontSize + "px Veranda";
-
-	// a variable for the height of text so only relivant feature text is shown
-	var h = 30;
-	board.fillText("Menu  Rules  About", width + 30,h);
-	// line seperating info from other
-		h+=20;
-		board.beginPath()
-		board.moveTo(width,h);
-		board.lineWidth = edge/2;
-		board.lineTo(width+200-edge/2,h);
-		board.stroke();
-
-	//menu appears when paused
-	if (pause){
-		h+=20;
-		//game options
-		board.fillText("Menu:", width + 50,h);
-
-		h+=25
-		if(euclidian){
-			board.fillText("Euclidian", width + 30,h);
-		}
-		else{
-			board.fillText("Non-Euclidian", width + 30,h);
-		}
-		h+=20
-		board.fillText("Countdown:", width + 30,h);
-		h+=20
-		board.fillText("Countdown Bonus:", width + 30,h);
-		h+=20
-		board.fillText("Increasing Fruit:", width + 30,h);
-		// line seperating info from other
-		h+=20;
-		board.beginPath()
-		board.moveTo(width,h);
-		board.lineWidth = edge/2;
-		board.lineTo(width+200-edge/2,h);
-		board.stroke();
-	}
-
-	// Action buttons
-	h+=20;
-	board.fillText("wasd", width + 30,h);
-	
-	// line seperating info from other
-	h+=20;
-	board.beginPath()
-	board.moveTo(width,h);
-	board.lineWidth = edge/2;
-	board.lineTo(width+200-edge/2,h);
-	board.stroke();
-
-	// key info & relivant text items
-	h += 20;
-	board.fillText("Key Info:", width + 50,h);
-	h += 25;
-	board.fillText("Snacks Enjoyed:",width + 30,h);
-	board.fillText(snackCounter,width + fontSize*9.5,h);
-	if (countdown){
-		h +=20
-		board.fillText("Time Remaining:",width + 30,h)
-		board.fillText(Math.floor(countMax*interval/250-count*interval/250),width + fontSize*9.5,h)
 	}
 }
 
@@ -482,21 +671,25 @@ for(var x = 0; x<15; x++){
 post()
 
 
+playgame = function(){
+	setInterval(function(){
+		if(play){
+			update(); 
+			post();
+			}
+		else if (pause)
+		{
+			post();
+		}
+		else{
+			document.getElementById("pause_menu").innerHTML = "<h3> Game Over </h3> <p> Please refresh your page to play again... or experiment with the pause button...</p>"
+			document.getElementById("pause_menu").style.zIndex = "1";
+			}
+		} ,interval)
+}
 
-setInterval(function(){
-	if(play){
-		update(); 
-		post();
-		}
-	else if (pause)
-	{
-		post();
-	}
-	else{
-		board.font = "32px Veranda";
-		board.fillText("GAME OVER",100,100)
-		}
-	} ,interval)
+playgame();
+
 
 /*
 **
@@ -534,5 +727,8 @@ setInterval(function(){
 **
 **
 */
+
+
+
 </script>
 </html>
