@@ -1,4 +1,4 @@
-
+<!doctype html>
 <html lang="en" onkeypress = "keyEventHandler(event)">
 <head>
 	<title> Snake </title>
@@ -66,7 +66,6 @@ div{
 	background-color: black;
 	margin:2.5px;
 	width:200px;
-	height: calc(100% - 50px);
 	float:left;
 	border: 10px solid #2c2;
 	display: grid;
@@ -222,18 +221,30 @@ var screenResize = function(){
 	windowWidth = window.innerWidth
 	windowHeight = Math.floor(windowHeight/10)*10
 	windowWidth = Math.floor(windowWidth/10)*10
+	let oneninety = 190;
 	if (window.innerWidth < windowHeight){
+		width = windowWidth-50;
+		height = windowHeight-50 - 200;
 		board.canvas.width = windowWidth-50;
 		board.canvas.height = windowHeight-50 - 200;
 		menu.style.width = windowWidth-50;
 		menu.style.height = 190;
+		menu.style.width = width.toString() +"px";
+		menu.style.height = oneninety.toString + "px";
+		console.log(windowWidth-50)
+		console.log(menu.style.width)
 	}
 	else
 		{
+			width = windowWidth-50 -200;
+			height = windowHeight-50;
 			board.canvas.width = windowWidth-50 -200;
 			board.canvas.height = windowHeight-50;
-			menu.style.width = 190;
-			menu.style.height = windowHeight-50;
+			menu.style.width = oneninety.toString + "px";
+			menu.style.height = height.toString() +"px";
+			console.log(windowHeight-50)
+			console.log(menu.style.height)
+			console.log(menu)
 		}
 	width = board.canvas.width-edge;
 	height = board.canvas.height-edge;
