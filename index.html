@@ -9,6 +9,7 @@
 	<meta name="keywords" content="Snake Single Page Application SPA CSS CSS3 HTML HTML5 Javascript Cayla Savitzky">
 	<meta name = "description" content = "A single page application that plays the classic game Snake. This is a demo page by Cayla Savitzky">
 	<meta name="author" content="Cayla Savitzky">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <style>
 body{
@@ -69,16 +70,7 @@ div{
 	box-sizing: border-box;
 	background-color: black;
 	margin:2.5px;
-	width:200px;
-	float:left;
 	border: 10px solid #2c2;
-	display: grid;
-	grid-template-columns: repeat(1,1fr);
-	grid-gap: 10px;
-	grid-template-areas: 
-	  " a "
-	  " b "
-	  " c ";
 }
 
 button{
@@ -97,6 +89,19 @@ button{
 	grid-auto-rows: 25px;
 	grid-template-areas: 
 	  ". a b c .";
+}
+@media (min-aspect-ratio: 1/1){
+	#options{
+		display: grid;
+		grid-template-columns: repeat(3,1fr);
+		grid-gap: 10px;
+		grid-auto-rows: 25px;
+		grid-template-areas:
+		  ". . ."
+		  ". a ."
+		  ". b ."
+		  ". c .";
+	}
 }
 #info{
 	display: grid;
@@ -153,6 +158,12 @@ button, p {
 	}
 }
 
+@media (max-width: 305px){
+	.xs-hide{
+		display: none;
+	}
+}
+
 </style>
 </head>
 <body onresize="screenResize()">
@@ -161,9 +172,9 @@ button, p {
 </div>
 <div id = 'menu'>
 	<div id = "options">
-		<button id = "option1" onclick= "option1()"> :3 </button>
-		<button id = "option2" onclick= "option2()"> ;) </button>
-		<button id = "option3" onclick= "option3()"> :P </button>
+		<button id = "option1" onclick= "Cheat()"> C<span class = "xs-hide">heat </button>
+		<button id = "option2" onclick= "Pause()"> P<span class = "xs-hide">ause </button>
+		<button id = "option3" onclick= "Restart()"> R<span class = "xs-hide">estart</span> </button>
 	</div>
 	<div id = "info">
 		<p id = "score"> score: 0 </p>
@@ -195,7 +206,7 @@ button, p {
 				Pause the game by pressing the "p" key
 			</li>
 			<li>
-				Collect 10 fruit to level up!
+				Collect fruit to level up!
 			</li>
 		</ul>
 
@@ -242,25 +253,33 @@ var screenResize = function(){
 		height = windowHeight-50 - 200;
 		board.canvas.width = windowWidth-50;
 		board.canvas.height = windowHeight-50 - 200;
-		menu.style.width = windowWidth-50;
-		menu.style.height = 190;
 		menu.style.width = width.toString() +"px";
-		menu.style.height = oneninety.toString + "px";
-		console.log(windowWidth-50)
-		console.log(menu.style.width)
+		menu.style.height = oneninety.toString() + "px";
+		/*
+		console.log("narrow")
+		console.log("border width:" , board.canvas.width)
+		console.log("menu width:" , menu.style.width)
+		console.log("border height:" , board.canvas.height)
+		console.log("menu height:" , menu.style.height)
+		*/
 	}
 	else
-		{
-			width = windowWidth-50 -200;
-			height = windowHeight-50;
-			board.canvas.width = windowWidth-50 -200;
-			board.canvas.height = windowHeight-50;
-			menu.style.width = oneninety.toString + "px";
-			menu.style.height = height.toString() +"px";
-			console.log(windowHeight-50)
-			console.log(menu.style.height)
-			console.log(menu)
-		}
+	{
+		width = windowWidth-50 -200;
+		height = windowHeight-50;
+		board.canvas.width = windowWidth-50 -200;
+		board.canvas.height = windowHeight-50;
+		menu.style.width = oneninety.toString() + "px";
+		menu.style.height = height.toString() +"px";
+		/*
+		console.log("wide")
+		console.log("border width:" , board.canvas.width)
+		console.log("menu width:" , menu.style.width)
+		console.log("border height:" , board.canvas.height)
+		console.log("menu height:" , menu.style.height)
+		*/
+
+	}
 	width = board.canvas.width-edge;
 	height = board.canvas.height-edge;
 }
@@ -345,10 +364,12 @@ keyEventHandler = function(event){
 		if (play){
 			play = false;
 			document.getElementById("pause_menu").style.zIndex = "1";
+			document.getElementById("pause_menu").style.visibility = "visible";
 		}
 		else {
 			play = true;
 			document.getElementById("pause_menu").style.zIndex = "-1";
+			document.getElementById("pause_menu").style.visibility = "hidden";
 		}
 		pause = !play
 		break
@@ -368,17 +389,31 @@ clickEventHandler = function(event){
 	}
 }
 
-option1 = function(){
-	wildColoredFruit = !wildColoredFruit
+Restart = function(){
+	newgame()
 }
 
-option2 = function(){
-	foodIncrease +=1;
-	foodIncrease %=2;
+Cheat = function(){
+	let herione = actors[0][0]
+	var n = 0
+	// optional increasing amount of food after each snack caught
+	while (n < foodIncrease){
+	fruitMaker()
+	n = n +1
+	}
+
+	//optional adding time to the timer
+	if (time)
+	{
+		time = time + timeBonus
+	}
+
+	herione.eat(fruit[0]);
+
 }
 
-option3 = function(){
-	timed = !timed;
+Pause = function(){
+	keyEventHandler(new fakeEvent(112))
 }
 
 
@@ -614,46 +649,6 @@ var rectIntersect = function(cord1, size1, cord2, size2){
 //console.log(-7%3)
 
 
-
-/*
-*
-*
-*		Snake Construction (called heroine)
-*
-*
-*/
-
-// Wala! Our Protagonist appears! Along with a delightful snack!
-var heroine = new actor('heroine',[new cord(0+size1,height-size1)],neonGreen,size1, new cord(0,-moveSpeed))
-// oldDir is used periodically to look at the last
-//	direction your snake was headed
-var oldDir = new cord(0,0)
-
-// She moves by adding a new cord for where her head is going, 
-//	and removing the furthest back cord where her tail was
-//	this saves a lot of processing, !!!BUT!!! it also means that
-//	the speed must always be equal to or greater than the snakes body
-heroine.moveEuclidian = function(){
-	oldDir = this.v
-	var body1 = this.cords[0]
-	var head = body1.dup()  /// issue this is refferencing head, but we just want its properties
-	head.x += this.v.x
-	head.y += this.v.y
-	this.cords.splice(0,0,head)
-	this.cords.pop()
-}
-heroine.moveNonEuclidian = function(){
-	oldDir = this.v
-	var body1 = this.cords[0]
-	var head = body1.dup()  /// issue this is refferencing head, but we just want its properties
-	head.x += this.v.x + width -10
-	head.x %= width-10
-	head.y += this.v.y + height -10
-	head.y %= height-10
-	this.cords.splice(0,0,head)
-	this.cords.pop()
-}
-
 heroineMoveUpdate = function(){
 	if(euclidian){
 		heroine.move = function() {
@@ -666,26 +661,73 @@ heroineMoveUpdate = function(){
 		}
 	}
 }
-heroineMoveUpdate();
-// Yes! I know! This actually adds new snacks to the front of your snake
-//	will anyone ever know? (from playing that is, obvi you&I know)
-heroine.eat = function(nom){
-	var head = this.cords[0]
-	//the new spot goes in the direction you're going (as a unit vector) multiplied by the size of your bod
-	var addition = new cord(head.x + this.v.x/moveSpeed*this.size, head.y + this.v.y/moveSpeed*this.size)	
-	this.cords.splice(0,0,addition)
-	
-	
-	fruit.splice(fruit.indexOf(nom),1)
-	
-	snackCounter = snackCounter+1
 
-	if (snackCounter%5 == 0)
-	{
-		levelup(snackCounter/5 + 1)
+
+/*
+*
+*
+*		Snake Construction (called heroine)
+*
+*
+*/
+var heroine
+var oldDir;
+function makeHeroine (){
+	// Wala! Our Protagonist appears! Along with a delightful snack!
+	heroine = new actor('heroine',[new cord(0+size1,height-size1)],neonGreen,size1, new cord(0,-moveSpeed))
+	// oldDir is used periodically to look at the last
+	//	direction your snake was headed
+	oldDir = new cord(0,0)
+
+	// She moves by adding a new cord for where her head is going, 
+	//	and removing the furthest back cord where her tail was
+	//	this saves a lot of processing, !!!BUT!!! it also means that
+	//	the speed must always be equal to or greater than the snakes body
+	heroine.moveEuclidian = function(){
+		oldDir = this.v
+		var body1 = this.cords[0]
+		var head = body1.dup()  /// issue this is refferencing head, but we just want its properties
+		head.x += this.v.x
+		head.y += this.v.y
+		this.cords.splice(0,0,head)
+		this.cords.pop()
 	}
+	heroine.moveNonEuclidian = function(){
+		oldDir = this.v
+		var body1 = this.cords[0]
+		var head = body1.dup()  /// issue this is refferencing head, but we just want its properties
+		head.x += this.v.x + width -10
+		head.x %= width-10
+		head.y += this.v.y + height -10
+		head.y %= height-10
+		this.cords.splice(0,0,head)
+		this.cords.pop()
+	}
+
+	heroineMoveUpdate();
+
+	// Yes! I know! This actually adds new snacks to the front of your snake
+	//	will anyone ever know? (from playing that is, obvi you&I know)
+	heroine.eat = function(nom){
+		var head = this.cords[0]
+		//the new spot goes in the direction you're going (as a unit vector) multiplied by the size of your bod
+		var addition = new cord(head.x + this.v.x/moveSpeed*this.size, head.y + this.v.y/moveSpeed*this.size)	
+		this.cords.splice(0,0,addition)
+		
+		
+		fruit.splice(fruit.indexOf(nom),1)
+		
+		snackCounter = snackCounter+1
+
+		if (snackCounter%5 == 0)
+		{
+			levelup(snackCounter/5 + 1)
+		}
+	}
+	// Adding your Snake to the list of actors (or actresses as the case may be!)
 }
-// Adding your Snake to the list of actors (or actresses as the case may be!)
+
+
 actors.splice(0,0,[heroine])
 
 
@@ -730,8 +772,6 @@ fruitMaker = function(){
 	actors[1].push(fruit)
 }
 
-fruitMaker()
-fruitMaker()
 //actors[0][0].eat(actors[1][0])
 
 
@@ -861,7 +901,7 @@ for(var x = 0; x<15; x++){
 	fruitMaker()}
 	*/
 
-post()
+
 
 var game
 playgame = function(){
@@ -877,6 +917,7 @@ playgame = function(){
 		else{
 			document.getElementById("pause_menu").innerHTML = "<h3> Game Over </h3> <p> Please refresh your page to play again... or experiment with the pause button...</p>"
 			document.getElementById("pause_menu").style.zIndex = "1";
+			document.getElementById("pause_menu").style.visibility = "visible";
 			endgame()
 			}
 		} ,interval)
@@ -886,11 +927,54 @@ function endgame(){
 }
 
 function newgame(){
-	levelup(1);
+	objectSize = 10;
+	canvas = document.getElementById("gamecanvas");
+	menu = document.getElementById("menu");
+	board = canvas.getContext('2d');
+	edge = objectSize;
+	screenResize();
+
+
+	fruit = []
+	actors = []
+	actors.push(fruit);
+	fruitmovement;
+	count = 0
+	countMax = 30
+	interval = 50
+	fontSize = 16;
+	play = false
+	nomPic = document.getElementById("nompic")
+	neonGreen = "#88FF88"
+	borderGreen = "#2c2"
+	euclidian = false;
+	foodIncrease = 1;
+	timed = true;
+	timeBonus = 1;
+	time = 30;
+	timeGain = false;
+	snackCounter = 0;
+	pause = !play
+	moveSpeed = 10;
+	size1 = objectSize;
+	size2 = objectSize;
+	movingFruit = false;
+	wildColoredFruit = false;
+
+	makeHeroine();
+	heroineMoveUpdate();
+	actors.splice(0,0,[heroine])
+	fruitmovement = new cord(0,1);
+
+	fruitMaker()
+	fruitMaker()
+	post()
+	levelup(1)
+	Pause()
 	playgame();
 }
-
 newgame();
+
 
 /*
 **
