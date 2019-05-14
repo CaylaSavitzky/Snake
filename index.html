@@ -38,7 +38,11 @@ top:-50%;
 #pause_menu > h3{
 	width:100%;
 	align-self: center;
-	justify-self:center;
+}
+
+
+#level_rules_header{
+	margin-top: 30px;
 }
 
 #pause_menu> div{
@@ -169,30 +173,41 @@ button, p {
 
 
 <img style="display:none" id = "nompic">
-<div id = "pause_menu">
-	<h3>How to play:</h3>
-	<ul>
-	<li>
-	Move with WASD or by swiping!
-	</li>
-	<li>
-	Pause the game by pressing the "p" key
-	</li>
-	<li>
-	You can pass through walls but be careful not to eat your own tail.
-	</li>
-	<li>
-	When the timer runs out it's game over.
-	</li>
-	</ul>
-	<div width="100%">
-		<button  onclick = "keyEventHandler(new fakeEvent(112))">
-			~Play~
-		</button>
+	
+	<div id = "pause_menu"> 
+		<h3 id = "level_rules_header"> Level 1 Rules </h3>
+		<ul id = "level_rules">
+			<li>
+				You can pass through walls but be careful not to eat your own tail.
+			</li>
+			<li>
+				When the timer runs out it's game over.
+			</li>
+		</ul>
+
+		
+		<h3>How to play:</h3>
+		<ul>
+			<li>
+				Move with WASD or by swiping!
+			</li>
+			<li>
+				Pause the game by pressing the "p" key
+			</li>
+			<li>
+				Collect 10 fruit to level up!
+			</li>
+		</ul>
+
+		<div width="100%">
+			<button  onclick = "keyEventHandler(new fakeEvent(112))">
+				~Play~
+			</button>
+		</div>
 	</div>
-</div>
 </body>
 <script>
+
 // Snake
 
 
@@ -255,9 +270,10 @@ screenResize();
 
 var fruit = []
 var actors = []
-actors.push(fruit)
+actors.push(fruit);
+var fruitmovement;
 var count = 0
-var countMax = 600
+var countMax = 30
 var interval = 50
 var fontSize = 16;
 var play = false
@@ -292,6 +308,64 @@ var fruityRainbow = ["Radical Red","#FF355E",
 "Hot Magenta","#FF00CC",
 "Purple Pizzazz","#FF00CC"]
 
+// Event Simulator
+var fakeEvent = function(key){
+	this.which = key;
+}
+
+
+// any key presses are handled here
+keyEventHandler = function(event){
+	var key = event.which
+	var h = actors[0][0];
+	switch(key){
+		case 119: 
+		if (!oldDir.isSame(new cord(0,moveSpeed))){
+			h.v = new cord(0,-moveSpeed); 
+		}
+		break;
+		case 115: 
+		if (!oldDir.isSame(new cord(0,-moveSpeed))){
+			h.v = new cord(0,moveSpeed); 
+		}
+		break;
+		case 97:
+		if (!oldDir.isSame(new cord(moveSpeed,0))){
+			h.v = new cord(-moveSpeed,0); 
+		}
+		break
+		case 100:
+		if (!oldDir.isSame(new cord(-moveSpeed,0))){
+			h.v = new cord(moveSpeed,0); 
+		}
+		break
+		case 112:
+		if (play){
+			play = false;
+			document.getElementById("pause_menu").style.zIndex = "1";
+		}
+		else {
+			play = true;
+			document.getElementById("pause_menu").style.zIndex = "-1";
+		}
+		pause = !play
+		break
+		default: 
+		break;
+		console.log('event handled: ' + h.v)
+	}
+}
+
+
+
+// gameboard clicks are handled here
+clickEventHandler = function(event){
+	var click = event
+	console.log(click.clientX, click.clientY);
+	switch(click){
+	}
+}
+
 option1 = function(){
 	wildColoredFruit = !wildColoredFruit
 }
@@ -303,6 +377,92 @@ option2 = function(){
 
 option3 = function(){
 	countdown = !countdown;
+}
+
+
+function levelup (i){
+	document.getElementById("level_rules_header").innerHTML = "Level " + i + " Rules";
+	let rules = ""
+	if (i == 1){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li>";
+		countdown = false;
+		movingFruit = true;
+	}
+	if (i == 2){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li><li>Collect fruit to gain time.</li><li>When the timer runs out it's game over.</li>";
+		countdown = true;
+		countdownBonus = 5;
+		wildColoredFruit = true;
+		movingFruit = false;
+		fruitmovement = "rand";
+	}
+	if (i == 3){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li><li>Collect fruit to gain time.</li><li>eat fruit to create fruit</li><li>When the timer runs out it's game over.</li>";
+		countdown = true;
+		countdownBonus = 6;
+		foodIncrease = 3;
+		wildColoredFruit = true;
+		movingFruit = true;
+	}
+	if (i == 4){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li><li>Collect fruit to gain time.</li><li>When the timer runs out it's game over.</li>";
+		countdown = true;
+		countdownBonus = 0;
+		foodIncrease = 0;
+		interval = 25;
+		endgame();
+		playgame();
+		wildColoredFruit = true;
+		fruitmovement = new cord(0,0);
+		movingFruit = false;
+	}
+	if (i == 5){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li><li>Collect fruit to gain time.</li><li>When the timer runs out it's game over.</li>";
+		interval = 50;
+		endgame();
+		playgame();
+		countdown = true;
+		countdownBonus = 0;
+		foodIncrease = 0
+		wildColoredFruit = true;
+	}
+	if (i == 6){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li><li>eat fruit to create fruit</li><li>When the timer runs out it's game over.</li>";
+		countdown = true;
+		countdownBonus = 0;
+		foodIncrease = 2;
+		wildColoredFruit = true;
+	}
+	if (i == 7){
+		rules = "<li> Be careful not to eat your own tail.</li><li>You can pass through walls </li>";
+		countdown = false;
+		countdownBonus = 0;
+		foodIncrease = 0
+		wildColoredFruit = true;
+		movingFruit = false;
+	}
+	if (i == 8){
+		rules = "<li> Be careful not to eat your own tail.</li><li>Don't touch the walls! </li>";
+		countdown = false;
+		countdownBonus = 0;
+		foodIncrease = 0;
+		wildColoredFruit = true;
+		euclidian = true;
+		heroineMoveUpdate();
+	}
+	if (i == 9){
+		rules = "<li> Be careful not to eat your own tail.</li><li>Don't touch the walls! </li><li> Last however long you can</li>";
+		countdown = false;
+		countdownBonus = 0;
+		foodIncrease = 10;
+		wildColoredFruit = true;
+		euclidian = true;
+		heroineMoveUpdate();
+	}
+	if (i < 10){
+		keyEventHandler(new fakeEvent(112));
+	}
+	document.getElementById("level_rules").innerHTML = rules
 }
 
 /*
@@ -339,6 +499,8 @@ try{
 catch(err) {
 	console.log("Hammer the js package isn't loading. Error caught: ",err)
 }
+
+levelup(1);
 
 /*
 *
@@ -451,16 +613,20 @@ heroine.moveNonEuclidian = function(){
 	this.cords.splice(0,0,head)
 	this.cords.pop()
 }
-if(euclidian){
-	heroine.move = function() {
-		this.moveEuclidian()
+
+heroineMoveUpdate = function(){
+	if(euclidian){
+		heroine.move = function() {
+			this.moveEuclidian()
+		}
+	}
+	else{
+		heroine.move = function() {
+			this.moveNonEuclidian()
+		}
 	}
 }
-else{
-	heroine.move = function() {
-		this.moveNonEuclidian()
-	}
-}
+heroineMoveUpdate();
 // Yes! I know! This actually adds new snacks to the front of your snake
 //	will anyone ever know? (from playing that is, obvi you&I know)
 heroine.eat = function(nom){
@@ -473,18 +639,35 @@ heroine.eat = function(nom){
 	fruit.splice(fruit.indexOf(nom),1)
 	
 	snackCounter = snackCounter+1
+
+	if (snackCounter%5 == 0)
+	{
+		levelup(snackCounter/5 + 1)
+	}
 }
 // Adding your Snake to the list of actors (or actresses as the case may be!)
 actors.splice(0,0,[heroine])
 
 
+fruitmovement = new cord(0,1);
 
 fruitMaker = function(){
 	var place = new cord(Math.floor(Math.random()*(width - 2*size2)/10)*10 + size2, Math.floor(Math.random()*(height - 2*size2)/10)*10+size2)
 	var color = "blue"
 	//weird fruit colors ^-^
 	color = fruityRainbow[Math.floor(Math.random()*fruityRainbow.length/2)*2+1];
-	var fruit = new actor('fruit',[place],color,size2)
+	let movement;
+	if (fruitmovement.constructor != cord){
+		console.log(fruitmovement);
+		if (fruitmovement == "rand")
+		{
+			movement = new cord(Math.floor((Math.random()*2)),Math.floor((Math.random()*2)))
+		}
+	}
+	else{
+		movement = fruitmovement.dup();
+	}
+	var fruit = new actor('fruit',[place],color,size2,movement)
 	actors[1].push(fruit)
 }
 
@@ -494,68 +677,12 @@ fruitMaker()
 
 
 
-// Event Simulator
-var fakeEvent = function(key){
-	this.which = key;
-}
 
-
-// any key presses are handled here
-keyEventHandler = function(event){
-	var key = event.which
-	var h = actors[0][0];
-	switch(key){
-		case 119: 
-		if (!oldDir.isSame(new cord(0,moveSpeed))){
-			h.v = new cord(0,-moveSpeed); 
-		}
-		break;
-		case 115: 
-		if (!oldDir.isSame(new cord(0,-moveSpeed))){
-			h.v = new cord(0,moveSpeed); 
-		}
-		break;
-		case 97:
-		if (!oldDir.isSame(new cord(moveSpeed,0))){
-			h.v = new cord(-moveSpeed,0); 
-		}
-		break
-		case 100:
-		if (!oldDir.isSame(new cord(-moveSpeed,0))){
-			h.v = new cord(moveSpeed,0); 
-		}
-		break
-		case 112:
-		if (play){
-			play = false;
-			document.getElementById("pause_menu").style.zIndex = "1";
-		}
-		else {
-			play = true;
-			document.getElementById("pause_menu").style.zIndex = "-1";
-		}
-		pause = !play
-		break
-		default: 
-		break;
-		console.log('event handled: ' + h.v)
-	}
-}
-
-
-
-// gameboard clicks are handled here
-clickEventHandler = function(event){
-	var click = event
-	console.log(click.clientX, click.clientY);
-	switch(click){
-	}
-}
 
 
 post = function(){
 	document.getElementById("score").innerHTML = "Score: " + snackCounter;
-	document.getElementById("time").innerHTML = "Time: " + Math.floor(countMax*interval/250-count*interval/250)
+	document.getElementById("time").innerHTML = "Time: " + Math.floor(countMax-count*interval/1000)
 
 
 	//drawing the game board
@@ -601,8 +728,7 @@ post = function(){
 				//optional adding time to the timer
 				if (countdown)
 				{
-					countMax= countMax - count + countMax*countdownBonus
-					count = 0
+					count = count - countdownBonus*1000/interval
 				}
 
 				f = 0
@@ -636,16 +762,8 @@ post = function(){
 		board.fillRect(cord1.x + edge,cord1.y+edge,herione.size,herione.size)
 	}
 	if (euclidian){
-		if (head.x <=0 || head.x >= width || head.y <=0 || head.y >= height){
-			console.log("Game Over")
-			play = false
-			//removes most of any parts of your snake that pass through the right wall
-			board.beginPath()
-			board.strokeStyle = "black";
-			board.moveTo(width,0);
-			board.lineWidth = edge;
-			board.lineTo(width,height);
-			board.stroke();
+		if (head.x <0 || head.x >= width-objectSize || head.y <0 || head.y >= height-objectSize){
+			play = false;
 		}
 	}
 }
@@ -665,7 +783,7 @@ update = function(){
 		}
 		if (countdown){
 		count ++
-		if(count*interval >countMax*interval){
+		if(count*interval/1000 >countMax){
 	//		count = 0
 	//		fruitMaker()
 			play = false
@@ -681,9 +799,9 @@ for(var x = 0; x<15; x++){
 
 post()
 
-
+var game
 playgame = function(){
-	setInterval(function(){
+	game = setInterval(function(){
 		if(play){
 			update(); 
 			post();
@@ -695,12 +813,20 @@ playgame = function(){
 		else{
 			document.getElementById("pause_menu").innerHTML = "<h3> Game Over </h3> <p> Please refresh your page to play again... or experiment with the pause button...</p>"
 			document.getElementById("pause_menu").style.zIndex = "1";
+			endgame()
 			}
 		} ,interval)
 }
+function endgame(){
+	clearInterval(game);
+}
 
-playgame();
+function newgame(){
+	levelup(1);
+	playgame();
+}
 
+newgame();
 
 /*
 **
