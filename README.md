@@ -1,2 +1,3 @@
 # Snake
-A single page application that plays the classic game Snake. This is a demo page by Cayla Savitzky.
+
+A single page application that plays through a number of variations on the classic game Snake.
