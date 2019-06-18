@@ -5,16 +5,18 @@
 
 	<meta name="robots" content="index, follow" />
 	<meta charset="UTF-8">
-	<link rel="canonical" href="" />
 	<meta name="keywords" content="Snake Single Page Application SPA CSS CSS3 HTML HTML5 Javascript Cayla Savitzky">
 	<meta name = "description" content = "A single page application that plays the classic game Snake. This is a demo page by Cayla Savitzky">
 	<meta name="author" content="Cayla Savitzky">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<script src="https://hammerjs.github.io/dist/hammer.js"></script>
 <style>
+
 body{
 	background-color: black;
-	margin:25;
+	margin:25px;
+	display: flex;
+	justify-content: center;
 }
 ul {
 position:relative;
@@ -52,6 +54,10 @@ top:-50%;
 	display: flex;
 	align-items: center;
 	align-content: center;
+}
+
+.center{
+
 }
 
 canvas {
@@ -156,6 +162,21 @@ button, p {
 		  " a  c"
 		  " b  c"
 	}
+	body{
+		flex-direction: column;
+	}
+}
+
+@media all and (aspect-ratio:1/1){
+	#menu{
+		grid-template-columns: repeat(2,1fr);
+		grid-template-areas: 
+		  " a  c"
+		  " b  c"
+	}
+	body{
+		flex-direction: column;
+	}
 }
 
 @media (max-width: 305px){
@@ -167,13 +188,13 @@ button, p {
 </style>
 </head>
 <body onresize="screenResize()">
-<div>
+<div class = center>
 	<canvas id = 'gamecanvas' onclick="clickEventHandler(event)"></canvas>
 </div>
 <div id = 'menu'>
 	<div id = "options">
-		<button id = "option1" onclick= "Cheat()"> C<span class = "xs-hide">heat </button>
-		<button id = "option2" onclick= "Pause()"> P<span class = "xs-hide">ause </button>
+		<button id = "option1" onclick= "Cheat()"> C<span class = "xs-hide">heat </span> </button>
+		<button id = "option2" onclick= "Pause()"> P<span class = "xs-hide">ause </span></button>
 		<button id = "option3" onclick= "Restart()"> R<span class = "xs-hide">estart</span> </button>
 	</div>
 	<div id = "info">
@@ -182,8 +203,6 @@ button, p {
 	</div>
 </div>
 
-
-<img style="display:none" id = "nompic">
 	
 	<div id = "pause_menu"> 
 		<h3 id = "level_rules_header"> Level 1 Rules </h3>
@@ -210,15 +229,13 @@ button, p {
 			</li>
 		</ul>
 
-		<div width="100%">
-			<button  onclick = "keyEventHandler(new fakeEvent(112))">
+		<div>
+			<button  id = "menu_button" onclick = "keyEventHandler(new fakeEvent(112))">
 				~Play~
 			</button>
 		</div>
 	</div>
-</body>
 <script>
-
 // Snake
 
 
@@ -385,8 +402,6 @@ keyEventHandler = function(event){
 clickEventHandler = function(event){
 	var click = event
 	console.log(click.clientX, click.clientY);
-	switch(click){
-	}
 }
 
 Restart = function(){
@@ -841,7 +856,6 @@ post = function(){
 					board.fillStyle = nom.symbol					
 				}
 				board.fillRect(cord1.x+edge, cord1.y +edge, nom.size, nom.size)
-				board.drawImage(nomPic, cord1.x +edge,cord1.y+edge,nom.size,nom.size)
 			}
 
 		}
@@ -915,18 +929,23 @@ playgame = function(){
 			post();
 		}
 		else{
-			document.getElementById("pause_menu").innerHTML = "<h3> Game Over </h3> <p> Please refresh your page to play again... or experiment with the pause button...</p>"
+			document.getElementById("level_rules_header").innerHTML = "Game Over";
+			document.getElementById("level_rules").innerHTML = "<h3> Game Over </h3> <p> Please refresh your page to play again... or experiment with the pause button...</p>";
 			document.getElementById("pause_menu").style.zIndex = "1";
 			document.getElementById("pause_menu").style.visibility = "visible";
+			document.getElementById("menu_button").onclick= Restart;
 			endgame()
 			}
 		} ,interval)
 }
+
 function endgame(){
 	clearInterval(game);
 }
 
 function newgame(){
+	endgame()
+	document.getElementById("menu_button").onclick= Pause;
 	objectSize = 10;
 	canvas = document.getElementById("gamecanvas");
 	menu = document.getElementById("menu");
@@ -939,12 +958,11 @@ function newgame(){
 	actors = []
 	actors.push(fruit);
 	fruitmovement;
-	count = 0
-	countMax = 30
-	interval = 50
+	count = 0;
+	countMax = 30;
+	interval = 50;
 	fontSize = 16;
 	play = false
-	nomPic = document.getElementById("nompic")
 	neonGreen = "#88FF88"
 	borderGreen = "#2c2"
 	euclidian = false;
@@ -1016,4 +1034,5 @@ newgame();
 
 
 </script>
+</body>
 </html>
