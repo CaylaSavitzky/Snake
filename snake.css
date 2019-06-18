@@ -1,0 +1,180 @@
+
+body{
+	background-color: black;
+	margin:25px;
+	display: flex;
+	justify-content: center;
+}
+
+canvas {
+	margin-bottom: 0;
+	margin-right: 0;
+	margin:2.5px;
+}
+
+button{
+	background: black;
+	color: #66FF66;
+	border: 1px solid #66FF66;
+	border-radius: 10%;
+	padding:6px 10px;
+	outline:none;
+}
+
+/*
+*
+*
+*
+Items in Pause Menu
+*
+*
+*
+*/
+
+
+#pause_menu{
+	margin:0;
+	float:left;
+	color: white;
+	background: #333;
+	opacity: .9;
+	padding: 10px;
+	position: absolute;
+	top:25px;
+	display: flex;
+	flex-wrap: wrap;
+	margin-right:20px;
+	width:calc(100% - 70px);
+	transition: z-index .1s;
+}
+
+#pause_menu > h3{
+	width:100%;
+	align-self: center;
+}
+
+
+#level_rules_header{
+	margin-top: 30px;
+}
+
+#pause_menu> div{
+	background-color: #333;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	align-content: center;
+}
+
+ul {
+	position:relative;
+	display:inline-block;
+	top:-50%;
+}
+
+/*
+*
+*
+*
+Items in Score Menu
+*
+*
+*
+*/
+
+#menu{
+	box-sizing: border-box;
+	background-color: black;
+	margin:2.5px;
+	border: 10px solid #2c2;
+}
+
+#options{
+	display: grid;
+	grid-template-columns: repeat(5,1fr);
+	grid-gap: 10px;
+	grid-auto-rows: 25px;
+	grid-template-areas: 
+	  ". a b c .";
+}
+
+#info{
+	display: grid;
+	color: #66FF66;
+	grid-template-columns: repeat(1,1fr);
+	grid-gap: 10px;
+	grid-auto-rows: 25px;
+	grid-template-areas: 
+	  " a "
+	  " b ";
+}
+
+#menu > div {
+	margin:20px;
+}
+
+@media (min-aspect-ratio: 1/1){
+	#options{
+		display: grid;
+		grid-template-columns: repeat(3,1fr);
+		grid-gap: 10px;
+		grid-auto-rows: 25px;
+		grid-template-areas:
+		  ". . ."
+		  ". a ."
+		  ". b ."
+		  ". c .";
+	}
+}
+
+
+button, p {
+	align-self: center;
+	justify-self: center;
+}
+
+#options {grid-area: a}
+#info {grid-area: b}
+#directions {grid-area: c}
+#option1 {grid-area: a;}
+#option2{grid-area: b;}
+#option3{grid-area: c;}
+#score{grid-area: a;}
+#time{grid-area: b;}
+#up{grid-area: a;}
+#left{grid-area: b;}
+#right{grid-area: c;}
+#down{grid-area: d;}
+
+
+
+
+@media all and (max-aspect-ratio:1/1){
+	#menu{
+		grid-template-columns: repeat(2,1fr);
+		grid-template-areas: 
+		  " a  c"
+		  " b  c"
+	}
+	body{
+		flex-direction: column;
+	}
+}
+
+@media all and (aspect-ratio:1/1){
+	#menu{
+		grid-template-columns: repeat(2,1fr);
+		grid-template-areas: 
+		  " a  c"
+		  " b  c"
+	}
+	body{
+		flex-direction: column;
+	}
+}
+
+@media (max-width: 305px){
+	.xs-hide{
+		display: none;
+	}
+}
